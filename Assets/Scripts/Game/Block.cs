@@ -1,4 +1,4 @@
-﻿using Unity.VisualScripting;
+﻿using System;
 using UnityEngine;
 
 public class Block : MonoBehaviour
@@ -16,8 +16,8 @@ public class Block : MonoBehaviour
     /// <summary>
     /// Block 초기화 함수
     /// </summary>
-    /// <param name="blockIndex"></param>
-    /// <param name="onBlockClicked"></param>
+    /// <param name="blockIndex">Block 인덱스</param>
+    /// <param name="onBlockClicked">Block 터치 이벤트</param>
     public void InitMarker(int blockIndex, OnBlockClicked onBlockClicked)
     {
         _blockIndex = blockIndex;
