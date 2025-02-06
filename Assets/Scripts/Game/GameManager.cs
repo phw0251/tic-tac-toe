@@ -143,9 +143,9 @@ public class GameManager : Singleton<GameManager>
                         else
                             EndGame(gameResult);
                     }
-                    else
+                    else 
                     {
-                        // TODO: 이미 있는 곳을 터치했을 때 처리
+                        SetTurn(TurnType.PlayerA);
                     }
                 };
                 
@@ -165,7 +165,7 @@ public class GameManager : Singleton<GameManager>
                 }
                 else
                 {
-                    // TODO: 이미 있는 곳을 터치했을 때 처리
+                    SetTurn(TurnType.PlayerB);
                 }
                 
                 break;
