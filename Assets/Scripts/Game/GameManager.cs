@@ -145,7 +145,7 @@ public class GameManager : Singleton<GameManager>
                     }
                     else 
                     {
-                        SetTurn(TurnType.PlayerA);
+                        
                     }
                 };
                 
@@ -165,7 +165,7 @@ public class GameManager : Singleton<GameManager>
                 }
                 else
                 {
-                    SetTurn(TurnType.PlayerB);
+                    
                 }
                 
                 break;
