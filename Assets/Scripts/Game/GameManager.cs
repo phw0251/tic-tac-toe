@@ -27,9 +27,11 @@ public class GameManager : Singleton<GameManager>
     }
     
     public enum GameType { SinglePlayer, DualPlayer }
+    private GameType _gameType;
 
     public void ChangeToGameScene(GameType gameType)
     {
+        _gameType = gameType;
         SceneManager.LoadScene("Game");
     }
 
@@ -152,22 +154,51 @@ public class GameManager : Singleton<GameManager>
                 break;
             case TurnType.PlayerB:
                 _gameUIController.SetGameUIMode(GameUIController.GameUIMode.TurnB);
-                
-                var result = AIController.FindNextMove(_board);
-                
-                if (SetNewBoardValue(PlayerType.PlayerB, result.row, result.col))
+
+                if (_gameType == GameType.SinglePlayer)
                 {
-                    var gameResult = CheckGameResult();
-                    if (gameResult == GameResult.None)
-                        SetTurn(TurnType.PlayerA);
+                    var result = MinimaxAIController.GetBestMove(_board);
+                    if (result.HasValue)
+                    {
+                        if (SetNewBoardValue(PlayerType.PlayerB, result.Value.row, result.Value.col))
+                        {
+                            var gameResult = CheckGameResult();
+                            if (gameResult == GameResult.None)
+                                SetTurn(TurnType.PlayerA);
+                            else
+                                EndGame(gameResult);
+                        }
+                        else
+                        {
+                            // TODO: 이미 있는 곳을 터치했을 때 처리
+                        }
+                    }
                     else
-                        EndGame(gameResult);
+                    {
+                        EndGame(GameResult.Win);
+                    }
+                    break;
                 }
-                else
+                    
+                else if (_gameType == GameType.DualPlayer)
                 {
                     
+                    _blockController.OnBlockClickedDelegate = (row, col) =>
+                    {
+                        if (SetNewBoardValue(PlayerType.PlayerB, row, col))
+                        {
+                            var gameResult = CheckGameResult();
+                            if (gameResult == GameResult.None)
+                                SetTurn(TurnType.PlayerA);
+                            else
+                                EndGame(gameResult);
+                        }
+                        else
+                        {
+                            // TODO: 이미 있는 곳을 터치했을 때 처리
+                        }
+                    };
                 }
-                
                 break;
         }
     }
@@ -180,26 +211,9 @@ public class GameManager : Singleton<GameManager>
     {
         if (CheckGameWin(PlayerType.PlayerA)) { return GameResult.Win; }
         if (CheckGameWin(PlayerType.PlayerB)) { return GameResult.Lose; }
-        if (IsAllBlocksPlaced()) { return GameResult.Draw; }
+        if (MinimaxAIController.IsAllBlocksPlaced(_board)) { return GameResult.Draw; }
         
         return GameResult.None;
-    }
-    
-    /// <summary>
-    /// 모든 마커가 보드에 배치 되었는지 확인하는 함수
-    /// </summary>
-    /// <returns>True: 모두 배치</returns>
-    private bool IsAllBlocksPlaced()
-    {
-        for (var row = 0; row < _board.GetLength(0); row++)
-        {
-            for (var col = 0; col < _board.GetLength(1); col++)
-            {
-                if (_board[row, col] == PlayerType.None)
-                    return false;
-            }
-        }
-        return true;
     }
     
     //게임의 승패를 판단하는 함수
